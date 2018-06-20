@@ -134,3 +134,7 @@
       command: bash /home/vagrant/vim-scripts/install.sh
       args:
         chdir: /home/vagrant/vim-scripts
+    - name: Install Ant
+      apt:
+        name: ant
+        state: present
