@@ -1,0 +1,117 @@
+- hosts: all
+  remote_user: vagrant
+  vars_files:
+    - /vagrant/ansible/vars.yml
+  tasks:
+    - name: Install git
+      apt:
+        name: git
+        state: present
+    - name: Install zsh
+      apt:
+        name: zsh
+        state: present
+    - name: Install .zshrc (vagrant)
+      copy:
+        src: /vagrant/ansible/files/zshrc
+        dest: /home/vagrant/.zshrc
+        force: no
+        owner: vagrant
+        group: vagrant
+        mode: 0644
+    - name: Install .zprompt (vagrant)
+      copy:
+        src: /vagrant/ansible/files/zprompt-vagrant
+        dest: /home/vagrant/.zprompt
+        force: no
+        owner: vagrant
+        group: vagrant
+        mode: 0644
+    - name: Install .zshrc (root)
+      copy:
+        src: /vagrant/ansible/files/zshrc
+        dest: /root/.zshrc
+        force: no
+        owner: root
+        group: root
+        mode: 0644
+    - name: Install .zprompt (root)
+      copy:
+        src: /vagrant/ansible/files/zprompt-root
+        dest: /root/.zprompt
+        force: no
+        owner: root
+        group: root
+        mode: 0644
+    - name: Install zkeys
+      copy:
+        src: /vagrant/ansible/files/zkeys
+        dest: /etc/zsh/zkeys
+        force: no
+        owner: root
+        group: root
+        mode: 0644
+    - name: Set zsh as login shell (vagrant)
+      user:
+        name: vagrant
+        shell: /usr/bin/zsh
+    - name: Set zsh as login shell (root)
+      user:
+        name: root
+        shell: /usr/bin/zsh
+    - name: Install .shellrc (vagrant)
+      copy:
+        src: /vagrant/ansible/files/shellrc-vagrant
+        dest: /home/vagrant/.shellrc
+        force: no
+        owner: vagrant
+        group: vagrant
+        mode: 0644
+    - name: Install tofrodos
+      apt:
+        name: tofrodos
+        state: present
+    - name: Install Docker prerequisites
+      apt:
+        update_cache: yes
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+    - name: Add Docker APT key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add Docker APT repository
+      apt_repository:
+        repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+        state: present
+    - name: Install Docker
+      apt:
+        name: docker-ce
+        state: present
+    - name: Stop docker service
+      service:
+        name: docker
+        state: stopped
+    - name: Patch dockerd configuration
+      replace:
+        path: /lib/systemd/system/docker.service
+        regexp: ^ExecStart=/usr/bin/dockerd -H fd://$
+        replace: ExecStart=/usr/bin/dockerd -H fd:// -H tcp://127.0.0.1:6666
+    - name: Add vagrant to docker group
+      user:
+        name: vagrant
+        groups: docker
+        append: yes
+    - name: Enable docker service
+      service:
+        name: docker
+        enabled: yes
+        state: started
+    - name: Install JDK
+      apt:
+        name: openjdk-8-jdk
+        state: present

@@ -1,0 +1,41 @@
+error_prompt_color=196
+machine_prompt_color=63
+branch_prompt_color=201
+dirty_prompt_color=208
+branch_tick_color=118
+jobs_prompt_color=226
+crlf_prompt_color=226
+
+dirty_prompt_mark="%${dirty_prompt_color}F‡%f"
+
+function emit_prompt {
+	local ref good bad dirty jobcount jobmark crlfmark
+	jobcount="$(jobs | wc -l)"
+	if [ $jobcount -gt 0 ]; then
+		jobmark="%${jobs_prompt_color}F[$jobcount]%f"
+	else
+		jobmark=''
+	fi
+	if [ "$(git config --global core.autocrlf)" = true ]; then
+		crlfmark="%${crlf_prompt_color}F[X]%f"
+	else
+		crlfmark=''
+	fi
+	ref="$(command git symbolic-ref HEAD 2>/dev/null)"
+	#ref=''
+	if [ -n "$ref" ]; then
+		ref="${ref#refs/heads/}"
+		dirty="$(command git status --porcelain --ignore-submodules=dirty)"
+		good="%${branch_prompt_color}F$ref%f"
+		if [ -n "$dirty" ]; then
+			good="$dirty_prompt_mark$good$dirty_prompt_mark"
+		fi
+		good="%${branch_tick_color}F►$good%${branch_tick_color}F◄%f$jobmark$crlfmark "
+	else
+		good="%${machine_prompt_color}F%m%f$jobmark$crlfmark%# "
+	fi
+	bad="%${error_prompt_color}Ferror%f$jobmark$crlfmark%# "
+	echo "%(?#$good#$bad)"
+}
+
+PROMPT='$(emit_prompt)'

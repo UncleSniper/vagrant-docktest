@@ -1,0 +1,18 @@
+error_prompt_color=196
+machine_prompt_color=63
+jobs_prompt_color=226
+
+function emit_prompt {
+	local good bad jobcount jobmark
+	jobcount="$(jobs | wc -l)"
+	if [ $jobcount -gt 0 ]; then
+		jobmark="%${jobs_prompt_color}F[$jobcount]%f"
+	else
+		jobmark=''
+	fi
+	good="%${machine_prompt_color}F%m%f$jobmark%# "
+	bad="%${error_prompt_color}Ferror%f$jobmark%# "
+	echo "%(?#$good#$bad)"
+}
+
+PROMPT='$(emit_prompt)'
