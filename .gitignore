@@ -1,2 +1,3 @@
 /ubuntu-xenial-*-console.log
 /.vagrant
+/ansible/vars.yml

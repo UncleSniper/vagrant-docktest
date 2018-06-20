@@ -7,6 +7,13 @@
       apt:
         name: git
         state: present
+    - name: Install .gitconfig
+      template:
+        src: /vagrant/ansible/templates/gitconfig.j2
+        dest: /home/vagrant/.gitconfig
+        owner: vagrant
+        group: vagrant
+        mode: 0644
     - name: Install zsh
       apt:
         name: zsh
