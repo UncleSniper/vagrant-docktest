@@ -58,6 +58,14 @@
         owner: root
         group: root
         mode: 0644
+    - name: Install /etc/global
+      copy:
+        src: /vagrant/ansible/files/global
+        dest: /etc/global
+        force: no
+        owner: root
+        group: root
+        mode: 0644
     - name: Set zsh as login shell (vagrant)
       user:
         name: vagrant
@@ -137,4 +145,37 @@
     - name: Install Ant
       apt:
         name: ant
+        state: present
+    - name: Create coders group
+      group:
+        name: coders
+        state: present
+    - name: Add vagrant to coders group
+      user:
+        name: vagrant
+        groups: coders
+        append: yes
+    - name: Create /scripts
+      file:
+        path: /scripts
+        state: directory
+        owner: root
+        group: coders
+        mode: 0775
+    - name: Add vimant.py to /scripts
+      file:
+        path: /scripts/vimant
+        state: link
+        src: /home/vagrant/vim-scripts/tools/vimant.py
+    - name: Install .vim makefile
+      copy:
+        src: /vagrant/ansible/files/dotvim-makefile
+        dest: /home/vagrant/.vim/makefile
+        force: no
+        owner: vagrant
+        group: vagrant
+        mode: 0644
+    - name: Install make
+      apt:
+        name: make
         state: present

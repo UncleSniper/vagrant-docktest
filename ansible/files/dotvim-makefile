@@ -1,0 +1,12 @@
+DUMPJTYPES=~/vim-scripts/tools/dumpjtypes.py
+JRE_RT=/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/rt.jar
+USSON_JAR=~/usson/dist/usson.jar
+
+javatypes.lst: jretypes.lst ussontypes.lst
+	cat $^ >$@
+
+jretypes.lst: $(JRE_RT)
+	$(DUMPJTYPES) $< >$@
+
+ussontypes.lst: $(USSON_JAR)
+	$(DUMPJTYPES) $< >$@
