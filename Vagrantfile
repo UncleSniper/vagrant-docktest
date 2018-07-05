@@ -61,6 +61,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.define "docktest" do |docktest|
 		docktest.vm.hostname = "docktest"
+		docktest.vm.network :forwarded_port, guest: 8080, host: 6666
 		docktest.vm.provision "shell", path: "install.sh"
 		docktest.vm.provision "ansible_local" do |ansible|
 			ansible.playbook = "ansible/provision.yml"
