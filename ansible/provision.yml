@@ -179,3 +179,7 @@
       apt:
         name: make
         state: present
+    - name: Install unzip
+      apt:
+        name: unzip
+        state: present
